@@ -1,3 +1,25 @@
+def is_it_one(one, other_args):
+    """ check if the first argument equals 1 """
+    if one == 1:
+        return True
+    else:
+        return False
+
+def is_it_zero(zero, other_args):
+    """ check if the first argument equals 0 """
+    if zero == 0:
+        return True
+    else:
+        return False
+
+def is_it_two(two, other_args):
+    """ check if the first argument equals 2 """
+    if two == 2:
+        return True
+    else:
+        return False
+
+
 train = [
     {
         "args": [0, 0],
@@ -17,7 +39,7 @@ train = [
     }
 ]
 
-train = [
+test = [
     {
         "args": [0, 0],
         "correct_answer": 0
