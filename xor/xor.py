@@ -50,7 +50,7 @@ def is_it_zero(zero, fun_args):
 
 def select_questions(possible_questions):
     """ get list of questions selected from possible questions """
-    questions_amount = 1
+    questions_amount = 2
     selected_questions = []
     for i in range(questions_amount):
         selected_questions.append(choice(possible_questions))
@@ -144,7 +144,3 @@ for data in test:
     categorization_result = categorize(categorizer, answers)
     print(f'correct_answer: {data["correct_answer"]}, categorization_result: {categorization_result}')
 print("test results end")
-
-
-# print(choice([True, False]))
-# print(list(map(lambda q : q["name"], questions)))
