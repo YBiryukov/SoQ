@@ -1,30 +1,53 @@
-from random import choice, randint
+from random import choice
 
 
-def assign_next_questions(next_questions, question_index, selected_questions_amount):
+def answer_selected_questions(data, selected_questions):
+    """ answer selected questions """
+    answers = []
+    for arg in data["args"]:
+        for question in selected_questions:
+            answer = question["fun"](arg, question["fun_args"])
+            answers.append(answer)
+    return answers
+
+def assign_next_questions(next_questions, question_index, args_amount):
     """ assign next questions to categorizer, assign category to each last question """
     question_index += 1
-    if question_index < selected_questions_amount:
+    if question_index < args_amount:
         next_questions["true"] = {
             "next_questions": {}
         }
         next_questions["false"] = {
             "next_questions": {}
         }
-        assign_next_questions(next_questions["true"]["next_questions"], question_index, selected_questions_amount)
-        assign_next_questions(next_questions["false"]["next_questions"], question_index, selected_questions_amount)
+        assign_next_questions(next_questions["true"]["next_questions"], question_index, args_amount)
+        assign_next_questions(next_questions["false"]["next_questions"], question_index, args_amount)
     else:
         next_questions["true"] = {
+            "next_questions": None,
             "category": choice(possible_categories)
         }
         next_questions["false"] = {
+            "next_questions": None,
             "category": choice(possible_categories)
         }
 
-def create_categorizer(possible_categories, selected_questions):
+def categorize(categorizer, answer_index, answers):
+    """ categorize answers """
+    if answers[answer_index] == True:
+        current_question = categorizer["true"]
+    elif answers[answer_index] == False:
+        current_question = categorizer["false"]
+    if current_question["next_questions"] != None:
+        answer_index += 1
+        return categorize(current_question["next_questions"], answer_index, answers)
+    else:
+        return current_question["category"]
+
+def create_categorizer(possible_categories, args_amount):
     """ create categorizer """
     categorizer = {}
-    assign_next_questions(categorizer, 0, len(selected_questions))
+    assign_next_questions(categorizer, 0, args_amount)
     return categorizer
 
 def is_it_one(one, fun_args):
@@ -50,7 +73,7 @@ def is_it_zero(zero, fun_args):
 
 def select_questions(possible_questions):
     """ get list of questions selected from possible questions """
-    questions_amount = 2
+    questions_amount = 1
     selected_questions = []
     for i in range(questions_amount):
         selected_questions.append(choice(possible_questions))
@@ -125,22 +148,32 @@ test = [
 ]
 
 
-selected_questions = select_questions(possible_questions)
-for question in selected_questions:
-    print(question)
-categorizer = create_categorizer(possible_categories, selected_questions)
-print(categorizer)
+args_amount = 2
 
-print("train results start")
-for data in train:
-    answers = answer_selected_questions(data, selected_questions)
-    categorization_result = categorize(categorizer, answers)
-    print(f'correct_answer: {data["correct_answer"]}, categorization_result: {categorization_result}')
-print("train results end")
+for i in range(1000):
+    selected_questions = select_questions(possible_questions)
+    for question in selected_questions:
+        print(question)
+    categorizer = create_categorizer(possible_categories, args_amount)
+    print(categorizer)
+
+    print("train results start")
+    results_correct = True
+    for data in train:
+        answers = answer_selected_questions(data, selected_questions)
+        print(answers)
+        categorization_result = categorize(categorizer, 0, answers)
+        print(f'correct_answer: {data["correct_answer"]}, categorization_result: {categorization_result}')
+        if data["correct_answer"] != categorization_result:
+            results_correct = False
+    print("train results end")
+    print(i)
+    if results_correct == True:
+        break
 
 print("test results start")
 for data in test:
     answers = answer_selected_questions(data, selected_questions)
-    categorization_result = categorize(categorizer, answers)
+    categorization_result = categorize(categorizer, 0, answers)
     print(f'correct_answer: {data["correct_answer"]}, categorization_result: {categorization_result}')
 print("test results end")
