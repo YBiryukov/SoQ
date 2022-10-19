@@ -1,2 +1,2 @@
 # SoQ
-Swarm of Questions. Alternative to Neural Nets.
+Swarm of Questions.

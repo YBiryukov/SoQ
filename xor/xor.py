@@ -1,5 +1,31 @@
-from random import choice
+from random import choice, randint
 
+
+def assign_next_questions(next_questions, question_index, selected_questions_amount):
+    """ assign next questions to categorizer, assign category to each last question """
+    question_index += 1
+    if question_index < selected_questions_amount:
+        next_questions["true"] = {
+            "next_questions": {}
+        }
+        next_questions["false"] = {
+            "next_questions": {}
+        }
+        assign_next_questions(next_questions["true"]["next_questions"], question_index, selected_questions_amount)
+        assign_next_questions(next_questions["false"]["next_questions"], question_index, selected_questions_amount)
+    else:
+        next_questions["true"] = {
+            "category": choice(possible_categories)
+        }
+        next_questions["false"] = {
+            "category": choice(possible_categories)
+        }
+
+def create_categorizer(possible_categories, selected_questions):
+    """ create categorizer """
+    categorizer = {}
+    assign_next_questions(categorizer, 0, len(selected_questions))
+    return categorizer
 
 def is_it_one(one, fun_args):
     """ is the first argument equals 1? """
@@ -21,6 +47,14 @@ def is_it_zero(zero, fun_args):
         return True
     else:
         return False
+
+def select_questions(possible_questions):
+    """ get list of questions selected from possible questions """
+    questions_amount = 1
+    selected_questions = []
+    for i in range(questions_amount):
+        selected_questions.append(choice(possible_questions))
+    return selected_questions
 
 
 possible_questions = [
@@ -92,7 +126,10 @@ test = [
 
 
 selected_questions = select_questions(possible_questions)
+for question in selected_questions:
+    print(question)
 categorizer = create_categorizer(possible_categories, selected_questions)
+print(categorizer)
 
 print("train results start")
 for data in train:
