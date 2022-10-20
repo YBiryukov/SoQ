@@ -10,18 +10,18 @@ def answer_selected_questions(data, selected_questions):
             answers.append(answer)
     return answers
 
-def assign_next_questions(next_questions, question_index, args_amount):
+def assign_next_questions(next_questions, question_index, answers_amount):
     """ assign next questions to categorizer, assign category to each last question """
     question_index += 1
-    if question_index < args_amount:
+    if question_index < answers_amount:
         next_questions["true"] = {
             "next_questions": {}
         }
         next_questions["false"] = {
             "next_questions": {}
         }
-        assign_next_questions(next_questions["true"]["next_questions"], question_index, args_amount)
-        assign_next_questions(next_questions["false"]["next_questions"], question_index, args_amount)
+        assign_next_questions(next_questions["true"]["next_questions"], question_index, answers_amount)
+        assign_next_questions(next_questions["false"]["next_questions"], question_index, answers_amount)
     else:
         next_questions["true"] = {
             "next_questions": None,
@@ -44,10 +44,10 @@ def categorize(categorizer, answer_index, answers):
     else:
         return current_question["category"]
 
-def create_categorizer(possible_categories, args_amount):
+def create_categorizer(possible_categories, answers_amount):
     """ create categorizer """
     categorizer = {}
-    assign_next_questions(categorizer, 0, args_amount)
+    assign_next_questions(categorizer, 0, answers_amount)
     return categorizer
 
 def is_it_one(one, fun_args):
@@ -73,7 +73,6 @@ def is_it_zero(zero, fun_args):
 
 def select_questions(possible_questions):
     """ get list of questions selected from possible questions """
-    questions_amount = 1
     selected_questions = []
     for i in range(questions_amount):
         selected_questions.append(choice(possible_questions))
@@ -149,12 +148,14 @@ test = [
 
 
 args_amount = 2
+questions_amount = 1
+answers_amount = args_amount * questions_amount
 
 for i in range(1000):
     selected_questions = select_questions(possible_questions)
     for question in selected_questions:
         print(question)
-    categorizer = create_categorizer(possible_categories, args_amount)
+    categorizer = create_categorizer(possible_categories, answers_amount)
     print(categorizer)
 
     print("train results start")
